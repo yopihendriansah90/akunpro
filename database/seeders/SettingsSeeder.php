@@ -1,0 +1,20 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Setting;
+use Illuminate\Database\Seeder;
+
+class SettingsSeeder extends Seeder
+{
+    public function run(): void
+    {
+        Setting::updateOrCreate(
+            ['id' => 1],
+            [
+                'store_name' => 'KasirAkun',
+                'whatsapp_number' => '6283116545674',
+            ]
+        );
+    }
+}
