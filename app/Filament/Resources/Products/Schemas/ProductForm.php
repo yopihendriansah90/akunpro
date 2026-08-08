@@ -24,6 +24,8 @@ class ProductForm
                         FileUpload::make('images')
                             ->label('Foto Produk')
                             ->image()
+                            ->disk('public')
+                            ->visibility('public')
                             ->imageEditor()
                             ->imageEditorMode(2)
                             ->imageCropAspectRatio('1:1')

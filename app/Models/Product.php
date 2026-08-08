@@ -73,6 +73,18 @@ class Product extends Model implements HasMedia
     {
         $media = $this->getFirstMedia('images');
 
-        return $media ? $media->getAvailableUrl([$conversion]) : null;
+        if (! $media) {
+            return null;
+        }
+
+        $path = $media->getAvailablePathRelativeToRoot([$conversion]);
+
+        // Keep local image URLs relative so they work whether the app is
+        // opened through localhost, 127.0.0.1, or another local hostname.
+        if ($media->disk === 'public') {
+            return '/storage/' . implode('/', array_map(rawurlencode(...), explode('/', $path)));
+        }
+
+        return $media->getAvailableUrl([$conversion]);
     }
 }

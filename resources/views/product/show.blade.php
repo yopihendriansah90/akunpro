@@ -32,8 +32,8 @@
 
     <div class="mt-6 grid gap-8 lg:grid-cols-2">
         <div class="relative aspect-square overflow-hidden rounded-[2rem] bg-gradient-to-br from-amber-100 via-amber-50 to-violet-100 shadow-lg ring-1 ring-amber-100">
-            @if ($p->getFirstMediaUrl('images'))
-                <img src="{{ $p->getFirstMediaUrl('images') }}" alt="{{ $p->name }}" class="h-full w-full object-cover" />
+            @if ($p->getImageUrl())
+                <img src="{{ $p->getImageUrl() }}" alt="{{ $p->name }}" class="h-full w-full object-cover" />
             @else
                 <div class="grid h-full w-full place-items-center">
                     <span class="material-symbols-rounded text-amber-500" style="font-size:9rem">{{ $p->icon }}</span>
@@ -113,6 +113,7 @@
 <script>
     window.KASIRAKUN = {
         products: @json([$productArray, ...$related]),
+        cartProducts: @json($cartProducts),
         categories: @json([]),
         pageProductId: @json($p->id),
     };

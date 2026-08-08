@@ -15,20 +15,7 @@ class ProductController extends Controller
             ->with('category')
             ->ordered()
             ->get()
-            ->map(fn (Product $p) => [
-                'id' => $p->id,
-                'name' => $p->name,
-                'category' => $p->category->name,
-                'price' => $p->price,
-                'original_price' => $p->original_price,
-                'duration' => $p->duration,
-                'warranty' => $p->warranty,
-                'icon' => $p->icon,
-                'rating' => $p->rating,
-                'badge' => $p->badge,
-                'description' => $p->description,
-                'image' => $p->getImageUrl(),
-            ]);
+            ->map(fn (Product $p) => $this->productData($p));
 
         return view('index', [
             'products' => $products,
@@ -50,26 +37,38 @@ class ProductController extends Controller
             ->ordered()
             ->take(10)
             ->get()
-            ->map(fn (Product $p) => [
-                'id' => $p->id,
-                'name' => $p->name,
-                'category' => $p->category->name,
-                'price' => $p->price,
-                'original_price' => $p->original_price,
-                'duration' => $p->duration,
-                'warranty' => $p->warranty,
-                'icon' => $p->icon,
-                'rating' => $p->rating,
-                'badge' => $p->badge,
-                'description' => $p->description,
-                'image' => $p->getImageUrl(),
-            ]);
+            ->map(fn (Product $p) => $this->productData($p));
+
+        $cartProducts = Product::active()
+            ->with('category')
+            ->ordered()
+            ->get()
+            ->map(fn (Product $p) => $this->productData($p));
 
         return view('product.show', [
             'product' => $product,
             'related' => $related,
+            'cartProducts' => $cartProducts,
             'storeName' => Setting::storeName(),
             'whatsappNumber' => Setting::whatsappNumber(),
         ]);
+    }
+
+    private function productData(Product $product): array
+    {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'category' => $product->category->name,
+            'price' => $product->price,
+            'original_price' => $product->original_price,
+            'duration' => $product->duration,
+            'warranty' => $product->warranty,
+            'icon' => $product->icon,
+            'rating' => $product->rating,
+            'badge' => $product->badge,
+            'description' => $product->description,
+            'image' => $product->getImageUrl(),
+        ];
     }
 }
