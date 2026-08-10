@@ -107,6 +107,10 @@ class Product extends Model implements HasMedia
             // On production/shared hosting, honor the configured disk URL so
             // installations inside a subdirectory do not point at the domain root.
             if (app()->environment('production') && filled($diskUrl = config('filesystems.disks.public.url'))) {
+                if (request()->isSecure()) {
+                    $diskUrl = preg_replace('/^http:/i', 'https:', $diskUrl);
+                }
+
                 return rtrim($diskUrl, '/').'/'.implode('/', array_map(rawurlencode(...), explode('/', $path)));
             }
 

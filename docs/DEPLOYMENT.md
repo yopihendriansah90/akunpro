@@ -37,6 +37,8 @@ MEDIA_DISK=public
 
 Jika aplikasi dipasang di subfolder, masukkan subfolder tersebut ke `APP_URL`. URL media production akan mengikuti konfigurasi disk Laravel.
 
+`APP_URL` wajib menggunakan `https://` jika domain memakai SSL. Setelah mengubah `.env`, jalankan `php artisan optimize:clear` lalu `php artisan optimize` agar URL disk tidak memakai konfigurasi lama.
+
 ## Permission
 
 Pastikan web server dapat membaca file media dan menulis cache Laravel:
