@@ -41,7 +41,7 @@
 <section id="katalog" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-10">
     <div>
         <p class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-violet-600">
-            <span class="material-symbols-rounded text-sm">grid_view</span> Katalog
+            <span class="material-symbols-rounded text-sm">apps</span> Katalog
         </p>
         <h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Pilih Produk Favoritmu</h2>
         <p class="mt-1 text-sm text-slate-500">Tambah ke keranjang, atau langsung order via WhatsApp.</p>

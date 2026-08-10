@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->profile()
             ->brandName(Setting::storeName())
             ->renderHook(
                 PanelsRenderHook::HEAD_END,

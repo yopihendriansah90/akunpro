@@ -44,7 +44,7 @@
         <div id="mobileMenu" class="mobile-menu border-t border-amber-100 bg-white px-6 md:hidden" aria-hidden="true">
             <nav class="flex flex-col gap-3 text-sm font-semibold text-slate-600">
                 <a href="{{ $home }}#beranda" class="flex items-center gap-2"><span class="material-symbols-rounded text-amber-500">home</span> Beranda</a>
-                <a href="{{ $home }}#katalog" class="flex items-center gap-2"><span class="material-symbols-rounded text-amber-500">grid_view</span> Katalog</a>
+                <a href="{{ $home }}#katalog" class="flex items-center gap-2"><span class="material-symbols-rounded text-amber-500">apps</span> Katalog</a>
                 <a href="{{ $home }}#cara-belanja" class="flex items-center gap-2"><span class="material-symbols-rounded text-amber-500">shopping_bag</span> Cara Belanja</a>
                 <a href="{{ $home }}#tentang" class="flex items-center gap-2"><span class="material-symbols-rounded text-amber-500">info</span> Tentang</a>
                 <a href="https://wa.me/{{ $whatsappNumber }}" target="_blank" rel="noopener" class="mt-2 flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 py-3 font-bold text-white">

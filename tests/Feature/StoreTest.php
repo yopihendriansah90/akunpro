@@ -102,6 +102,22 @@ class StoreTest extends TestCase
             ->assertSee('Nomor WhatsApp Admin');
     }
 
+    public function test_admin_profile_page_renders_for_authenticated_user(): void
+    {
+        $user = User::create([
+            'name' => 'Admin',
+            'email' => 'profile@kasirakun.test',
+            'password' => bcrypt('password'),
+        ]);
+
+        $this->actingAs($user)
+            ->get('/admin/profile')
+            ->assertOk()
+            ->assertSee('Nama')
+            ->assertSee('Alamat email')
+            ->assertSee('Kata sandi baru');
+    }
+
     public function test_product_detail_page_renders_with_related(): void
     {
         Setting::create(['store_name' => 'KasirAkun', 'whatsapp_number' => '6283116545674']);
