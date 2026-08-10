@@ -14,7 +14,7 @@
     font-style: normal;
     font-weight: 100 700;
     font-display: swap;
-    src: url('/fonts/material-symbols-rounded.woff2?v=20260810-3') format('woff2');
+    src: url('/fonts/material-symbols-rounded.woff2?v=20260810-4') format('woff2');
 }
 
 html {
@@ -32,17 +32,23 @@ html {
 
 .material-symbols-rounded {
     font-family: 'Material Symbols Rounded';
-    font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    font-weight: 400;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     font-size: 1.25rem;
     line-height: 1;
     vertical-align: middle;
+    display: inline-block;
+    white-space: nowrap;
+    text-transform: none;
+    letter-spacing: normal;
     user-select: none;
     font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
 }
 
 .material-symbols-rounded.fill {
-    font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+    font-weight: 400;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 .mobile-menu {
