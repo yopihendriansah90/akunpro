@@ -34,7 +34,7 @@ const icon = (name, cls = "") =>
 
 function categoryIcon(cat) {
     const found = categories.find((c) => c.name === cat);
-    return icon(found ? found.icon : "label", "text-base");
+    return icon(found ? found.icon : "apps", "text-base");
 }
 
 function stars(r, size = "1rem") {

@@ -41,7 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName(Setting::storeName())
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): HtmlString => new HtmlString('<style>@font-face{font-family:"Material Symbols Rounded";font-style:normal;font-weight:100 700;font-display:swap;src:url("/fonts/material-symbols-rounded.woff2?v=20260810-2") format("woff2");}.material-symbols-rounded{font-family:"Material Symbols Rounded";font-feature-settings:"liga";-webkit-font-smoothing:antialiased;}</style><style>.fi-fo-rich-editor-main > .fi-fo-rich-editor-content, .fi-fo-rich-editor-main > .fi-fo-rich-editor-content [contenteditable="true"] { min-height: 220px; } @media (max-width: 640px) { .fi-fo-rich-editor-main > .fi-fo-rich-editor-content, .fi-fo-rich-editor-main > .fi-fo-rich-editor-content [contenteditable="true"] { min-height: 180px; } }</style>'),
+                fn (): HtmlString => new HtmlString('<style>@font-face{font-family:"Material Symbols Rounded";font-style:normal;font-weight:100 700;font-display:swap;src:url("/fonts/material-symbols-rounded.woff2?v=20260810-3") format("woff2");}.material-symbols-rounded{font-family:"Material Symbols Rounded";font-feature-settings:"liga";-webkit-font-smoothing:antialiased;}</style><style>.fi-fo-rich-editor-main > .fi-fo-rich-editor-content, .fi-fo-rich-editor-main > .fi-fo-rich-editor-content [contenteditable="true"] { min-height: 220px; } @media (max-width: 640px) { .fi-fo-rich-editor-main > .fi-fo-rich-editor-content, .fi-fo-rich-editor-main > .fi-fo-rich-editor-content [contenteditable="true"] { min-height: 180px; } }</style>'),
             )
             ->colors([
                 'primary' => Color::Amber,
