@@ -71,6 +71,40 @@ html {
     transform: translateY(0);
 }
 
+@media (max-width: 767px) {
+    .product-detail-page main {
+        padding-bottom: 5.75rem;
+    }
+
+    .product-detail-page .product-actions {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 35;
+        margin-top: 0;
+        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+        border-top: 1px solid rgb(245 158 11 / 0.18);
+        background: rgb(255 251 242 / 0.94);
+        box-shadow: 0 -8px 24px rgb(15 23 42 / 0.1);
+        backdrop-filter: blur(14px);
+    }
+
+    .product-detail-page .product-actions > * {
+        min-height: 2.75rem;
+        min-width: 0;
+        gap: 0.35rem;
+        padding-right: 0.6rem;
+        padding-left: 0.6rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    .product-detail-page .product-detail-admin-wa {
+        display: none;
+    }
+}
+
 @media (min-width: 768px) {
     .mobile-menu {
         display: none !important;

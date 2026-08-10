@@ -87,7 +87,7 @@
                 <span class="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 ring-1 ring-amber-100"><span class="material-symbols-rounded text-base text-violet-500">support_agent</span> Bantuan responsif</span>
             </div>
 
-            <div class="mt-6 flex gap-3">
+            <div class="product-actions mt-6 flex gap-3">
                 <button data-cart="{{ $p->id }}"
                         class="flex flex-1 items-center justify-center gap-2 rounded-full bg-slate-900 py-3.5 text-sm font-bold text-white transition hover:bg-slate-700">
                     <span class="material-symbols-rounded text-lg">add_shopping_cart</span> Tambah ke Keranjang
