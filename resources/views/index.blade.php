@@ -59,7 +59,7 @@
     <div class="mx-auto max-w-6xl px-4">
         <div class="text-center">
             <p class="flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-widest text-violet-600">
-                <span class="material-symbols-rounded text-sm">how_to_reg</span> Mudah
+                <span class="material-symbols-rounded text-sm">check_circle</span> Mudah
             </p>
             <h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Cara Belanja</h2>
         </div>
@@ -89,7 +89,7 @@
 <section id="testimoni" class="mx-auto max-w-6xl px-4 py-12">
     <div class="text-center">
         <p class="flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-widest text-violet-600">
-            <span class="material-symbols-rounded text-sm">forum</span> Testimoni
+            <span class="material-symbols-rounded text-sm">chat</span> Testimoni
         </p>
         <h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Kata Mereka</h2>
     </div>
