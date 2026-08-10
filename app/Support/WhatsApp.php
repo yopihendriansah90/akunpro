@@ -9,7 +9,13 @@ class WhatsApp
 {
     public static function number(): string
     {
-        return Setting::whatsappNumber();
+        $number = preg_replace('/\D+/', '', Setting::whatsappNumber()) ?? '';
+
+        if (preg_match('/^[1-9][0-9]{7,14}$/', $number) !== 1) {
+            $number = preg_replace('/\D+/', '', (string) config('whatsapp.number')) ?? '';
+        }
+
+        return preg_match('/^[1-9][0-9]{7,14}$/', $number) === 1 ? $number : '';
     }
 
     public static function formatRupiah(int $amount): string

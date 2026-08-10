@@ -40,12 +40,12 @@
                     <span class="material-symbols-rounded">shopping_cart</span>
                     <span id="cartBadge" class="absolute -right-1 -top-1 hidden h-5 min-w-5 place-items-center rounded-full bg-slate-900 px-1 text-[11px] font-bold text-white"></span>
                 </button>
-                <button id="menuBtn" class="grid h-10 w-10 place-items-center rounded-full bg-amber-100 text-amber-600 transition hover:bg-amber-200 md:hidden" aria-label="Menu">
+                <button id="menuBtn" class="grid h-10 w-10 place-items-center rounded-full bg-amber-100 text-amber-600 transition hover:bg-amber-200 md:hidden" aria-label="Buka menu" aria-expanded="false" aria-controls="mobileMenu">
                     <span class="material-symbols-rounded">menu</span>
                 </button>
             </div>
         </div>
-        <div id="mobileMenu" class="hidden border-t border-amber-100 bg-white px-6 py-4 md:hidden">
+        <div id="mobileMenu" class="mobile-menu border-t border-amber-100 bg-white px-6 md:hidden" aria-hidden="true">
             <nav class="flex flex-col gap-3 text-sm font-semibold text-slate-600">
                 <a href="{{ $home }}#beranda" class="flex items-center gap-2"><span class="material-symbols-rounded text-amber-500">home</span> Beranda</a>
                 <a href="{{ $home }}#katalog" class="flex items-center gap-2"><span class="material-symbols-rounded text-amber-500">grid_view</span> Katalog</a>

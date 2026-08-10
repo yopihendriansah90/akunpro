@@ -67,7 +67,7 @@ class ProductController extends Controller
             'icon' => $product->icon,
             'rating' => $product->rating,
             'badge' => $product->badge,
-            'description' => $product->description,
+            'description' => strip_tags($product->description),
             'image' => $product->getImageUrl(),
         ];
     }

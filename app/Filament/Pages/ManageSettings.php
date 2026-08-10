@@ -69,8 +69,9 @@ class ManageSettings extends Page implements HasSchemas
                     ->label('Nomor WhatsApp Admin')
                     ->helperText('Format internasional tanpa tanda +, contoh: 6283116545674')
                     ->required()
-                    ->regex('/^[0-9]+$/')
-                    ->maxLength(20),
+                    ->regex('/^[1-9][0-9]{7,14}$/')
+                    ->minLength(8)
+                    ->maxLength(15),
             ])
             ->statePath('data');
     }

@@ -33,3 +33,111 @@ html {
 .material-symbols-rounded.fill {
     font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
 }
+
+.mobile-menu {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    pointer-events: none;
+    transform: translateY(-0.5rem);
+    transition: max-height 260ms ease, opacity 180ms ease, padding 260ms ease, transform 260ms ease;
+}
+
+.mobile-menu.is-open {
+    max-height: 24rem;
+    opacity: 1;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+    .mobile-menu {
+        display: none !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mobile-menu {
+        transition: none;
+        transform: none;
+    }
+}
+
+.rich-content > :first-child {
+    margin-top: 0;
+}
+
+.rich-content > :last-child {
+    margin-bottom: 0;
+}
+
+.rich-content p {
+    margin: 0;
+}
+
+.rich-content p + p,
+.rich-content p + ul,
+.rich-content p + ol,
+.rich-content ul + p,
+.rich-content ol + p,
+.rich-content blockquote + p,
+.rich-content p + blockquote {
+    margin-top: 0.75rem;
+}
+
+.rich-content ul,
+.rich-content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.rich-content ul {
+    list-style: disc;
+}
+
+.rich-content ol {
+    list-style: decimal;
+}
+
+.rich-content li + li {
+    margin-top: 0.25rem;
+}
+
+.rich-content li > p {
+    display: inline;
+}
+
+.rich-content li:has(> p:empty) {
+    display: none;
+}
+
+.rich-content li > ul,
+.rich-content li > ol {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.rich-content ol ol {
+    list-style-type: lower-alpha;
+}
+
+.rich-content ul ul {
+    list-style-type: circle;
+}
+
+.rich-content blockquote {
+    border-left: 3px solid rgb(245 158 11 / 0.55);
+    margin: 0.75rem 0;
+    padding-left: 0.75rem;
+    color: rgb(100 116 139);
+}
+
+.rich-content a {
+    color: rgb(217 119 6);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}

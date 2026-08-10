@@ -20,7 +20,17 @@ const perPage = 10;
 const productById = {};
 cartProducts.forEach((p) => (productById[String(p.id)] = p));
 
-const icon = (name, cls = "") => `<span class="material-symbols-rounded ${cls}">${name}</span>`;
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+const icon = (name, cls = "") =>
+    `<span class="material-symbols-rounded ${escapeHtml(cls)}">${escapeHtml(name)}</span>`;
 
 function categoryIcon(cat) {
     const found = categories.find((c) => c.name === cat);
@@ -49,25 +59,31 @@ function discount(p) {
 
 function cardHTML(p) {
     const disc = discount(p);
+    const id = escapeHtml(p.id);
+    const name = escapeHtml(p.name);
+    const duration = escapeHtml(p.duration);
+    const warranty = escapeHtml(p.warranty);
+    const badge = escapeHtml(p.badge);
+    const image = escapeHtml(p.image);
+    const directUrl = escapeHtml(waLink(whatsappNumber, buildDirectMessage(p)));
     return (
         '<article class="group flex flex-col overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-amber-900/5 transition hover:-translate-y-1 hover:shadow-lg hover:ring-amber-300">' +
-        `<div class="relative aspect-square cursor-pointer overflow-hidden bg-gradient-to-br from-amber-100 via-amber-50 to-violet-100" data-open="${p.id}">` +
+        `<div class="relative aspect-square cursor-pointer overflow-hidden bg-gradient-to-br from-amber-100 via-amber-50 to-violet-100" data-open="${id}">` +
         (p.image
-            ? `<img src="${p.image}" alt="${p.name}" loading="lazy" class="h-full w-full object-cover transition duration-300 group-hover:scale-110" />`
+            ? `<img src="${image}" alt="${name}" loading="lazy" class="h-full w-full object-cover transition duration-300 group-hover:scale-110" />`
             : `<div class="grid h-full w-full place-items-center transition duration-300 group-hover:scale-110">` + icon(p.icon, "text-5xl text-amber-500") + "</div>") +
         (disc ? `<span class="absolute left-1.5 top-1.5 rounded-md bg-[#ee4d2d] px-1.5 py-0.5 text-[10px] font-bold text-white">-${disc}%</span>` : "") +
-        (p.badge ? `<span class="absolute right-1.5 top-1.5 rounded-md bg-slate-900/80 px-1.5 py-0.5 text-[9px] font-semibold text-white">${p.badge}</span>` : "") +
+        (p.badge ? `<span class="absolute right-1.5 top-1.5 rounded-md bg-slate-900/80 px-1.5 py-0.5 text-[9px] font-semibold text-white">${badge}</span>` : "") +
         "</div>" +
         '<div class="flex flex-1 flex-col p-2.5">' +
         '<div class="flex items-center gap-1">' +
         stars(p.rating, "0.85rem") +
         `<span class="text-[11px] text-slate-400">(${p.rating})</span>` +
         "</div>" +
-        `<h3 class="line-clamp-2 mt-1 cursor-pointer text-xs font-medium leading-snug text-slate-700 transition hover:text-[#ee4d2d]" data-open="${p.id}">${p.name}</h3>` +
-        '<div class="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] text-slate-400">' +
-        icon("schedule", "text-[11px]") + 'Masa aktif ' + p.duration +
-        '<span class="text-slate-300">·</span>' +
-        icon("verified_user", "text-[11px]") + 'Garansi ' + p.warranty +
+        `<h3 class="line-clamp-2 mt-1 cursor-pointer text-xs font-medium leading-snug text-slate-700 transition hover:text-[#ee4d2d]" data-open="${id}">${name}</h3>` +
+        '<div class="mt-1 flex flex-col gap-1 text-[10px] leading-tight text-slate-400">' +
+        '<span class="flex min-w-0 items-start gap-1">' + icon("schedule", "shrink-0 text-[11px] text-slate-400") + `<span class="min-w-0 break-words">Masa aktif ${duration}</span></span>` +
+        '<span class="flex min-w-0 items-start gap-1">' + icon("verified_user", "shrink-0 text-[11px] text-slate-400") + `<span class="min-w-0 break-words">Garansi ${warranty}</span></span>` +
         "</div>" +
         '<div class="mt-auto pt-2">' +
         '<div class="flex items-baseline gap-1">' +
@@ -75,9 +91,9 @@ function cardHTML(p) {
         (p.original_price ? `<span class="text-[10px] text-slate-400 line-through">${formatRupiah(p.original_price)}</span>` : "") +
         "</div>" +
         '<div class="mt-1.5 flex gap-1.5">' +
-        `<button class="grid h-8 w-8 place-items-center rounded-full bg-slate-900 text-white transition hover:bg-slate-700 font-bold sm:flex sm:flex-1 sm:w-auto sm:h-auto sm:justify-center sm:items-center sm:gap-1 sm:py-1.5 sm:text-[11px]" data-cart="${p.id}">` +
+        `<button aria-label="Tambah ${name} ke keranjang" class="grid h-8 w-8 place-items-center rounded-full bg-slate-900 text-white transition hover:bg-slate-700 font-bold sm:flex sm:flex-1 sm:w-auto sm:h-auto sm:justify-center sm:items-center sm:gap-1 sm:py-1.5 sm:text-[11px]" data-cart="${id}">` +
         icon("add_shopping_cart", "text-[8px]") + '<span class="hidden sm:inline">Keranjang</span></button>' +
-        `<a class="flex flex-1 items-center justify-center gap-1 rounded-full bg-emerald-500 py-1.5 text-[11px] font-bold text-white shadow transition hover:bg-emerald-600" href="${waLink(whatsappNumber, buildDirectMessage(p))}" target="_blank" rel="noopener">` +
+        `<a aria-label="Beli ${name} via WhatsApp" class="flex flex-1 items-center justify-center gap-1 rounded-full bg-emerald-500 py-1.5 text-[11px] font-bold text-white shadow transition hover:bg-emerald-600" href="${directUrl}" target="_blank" rel="noopener">` +
         waIcon("h-3 w-3") + " WhatsApp</a>" +
         "</div>" +
         "</div>" +
@@ -94,7 +110,7 @@ function renderTabs() {
             const active = c === activeCat
                 ? "bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md shadow-amber-500/30"
                 : "bg-white text-slate-600 hover:bg-amber-100";
-            return `<button class="flex items-center gap-1.5 whitespace-nowrap rounded-full px-5 py-2 text-sm font-bold ring-1 ring-amber-100 transition ${active}" data-cat="${c}">${categoryIcon(c)}${c}</button>`;
+            return `<button class="flex items-center gap-1.5 whitespace-nowrap rounded-full px-5 py-2 text-sm font-bold ring-1 ring-amber-100 transition ${active}" data-cat="${escapeHtml(c)}">${categoryIcon(c)}${escapeHtml(c)}</button>`;
         })
         .join("");
 }
@@ -199,11 +215,11 @@ function renderCart() {
                 '<div class="mb-3 flex items-center gap-3 rounded-3xl bg-white p-3.5 shadow-sm ring-1 ring-amber-100">' +
                 `<span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-amber-100 to-violet-100 text-amber-500">${icon(p.icon, "text-2xl")}</span>` +
                 '<div class="min-w-0 flex-1">' +
-                `<p class="truncate text-sm font-extrabold text-slate-900">${p.name}</p>` +
+                `<p class="truncate text-sm font-extrabold text-slate-900">${escapeHtml(p.name)}</p>` +
                 '<p class="mt-0.5 flex items-center gap-1 truncate text-xs text-slate-500">' +
-                icon("schedule", "text-xs text-amber-500") + p.duration +
+                icon("schedule", "text-xs text-amber-500") + escapeHtml(p.duration) +
                 '<span class="mx-0.5 text-slate-300">·</span>' +
-                icon("verified_user", "text-xs text-emerald-500") + p.warranty +
+                icon("verified_user", "text-xs text-emerald-500") + escapeHtml(p.warranty) +
                 `</p><p class="mt-0.5 text-xs text-slate-400">${formatRupiah(p.price)} / unit</p>` +
                 "</div>" +
                 '<div class="flex shrink-0 flex-col items-end gap-1.5">' +
@@ -339,9 +355,34 @@ function bindEvents() {
     }
 
     if ($("menuBtn") && $("mobileMenu")) {
-        $("menuBtn").addEventListener("click", () => $("mobileMenu").classList.toggle("hidden"));
-        $("mobileMenu").querySelectorAll("a").forEach((a) =>
-            a.addEventListener("click", () => $("mobileMenu").classList.add("hidden"))
+        const menuButton = $("menuBtn");
+        const mobileMenu = $("mobileMenu");
+        const menuIcon = menuButton.querySelector(".material-symbols-rounded");
+
+        const setMenuOpen = (isOpen) => {
+            mobileMenu.classList.toggle("is-open", isOpen);
+            menuButton.setAttribute("aria-expanded", String(isOpen));
+            menuButton.setAttribute("aria-label", isOpen ? "Tutup menu" : "Buka menu");
+            mobileMenu.setAttribute("aria-hidden", String(!isOpen));
+            if (menuIcon) menuIcon.textContent = isOpen ? "close" : "menu";
+        };
+
+        menuButton.addEventListener("click", () =>
+            setMenuOpen(!mobileMenu.classList.contains("is-open"))
+        );
+        document.addEventListener("click", (event) => {
+            if (!mobileMenu.classList.contains("is-open")) return;
+            if (mobileMenu.contains(event.target) || menuButton.contains(event.target)) return;
+            setMenuOpen(false);
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && mobileMenu.classList.contains("is-open")) {
+                setMenuOpen(false);
+                menuButton.focus();
+            }
+        });
+        mobileMenu.querySelectorAll("a").forEach((a) =>
+            a.addEventListener("click", () => setMenuOpen(false))
         );
     }
 

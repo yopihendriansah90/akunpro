@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Filament\Forms\Components\RichEditor\Models\Concerns\InteractsWithRichContent;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, InteractsWithRichContent;
 
     protected $fillable = [
         'category_id',
@@ -35,6 +36,11 @@ class Product extends Model implements HasMedia
         'available' => 'boolean',
     ];
 
+    protected function setUpRichContent(): void
+    {
+        $this->registerRichContent('description');
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -53,6 +59,7 @@ class Product extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
+            ->useDisk(config('media-library.disk_name', 'public'))
             ->singleFile();
     }
 
@@ -61,12 +68,14 @@ class Product extends Model implements HasMedia
         $this->addMediaConversion('thumb')
             ->width(200)
             ->height(200)
-            ->sharpen(10);
+            ->sharpen(10)
+            ->nonQueued();
 
         $this->addMediaConversion('card')
             ->width(600)
             ->height(600)
-            ->sharpen(5);
+            ->sharpen(5)
+            ->nonQueued();
     }
 
     public function getImageUrl(string $conversion = 'card'): ?string
@@ -77,7 +86,9 @@ class Product extends Model implements HasMedia
             return null;
         }
 
-        $path = $media->getAvailablePathRelativeToRoot([$conversion]);
+        $path = $media->getAvailablePathRelativeToRoot(
+            $conversion !== '' && $media->hasGeneratedConversion($conversion) ? [$conversion] : []
+        );
 
         // Keep local image URLs relative so they work whether the app is
         // opened through localhost, 127.0.0.1, or another local hostname.

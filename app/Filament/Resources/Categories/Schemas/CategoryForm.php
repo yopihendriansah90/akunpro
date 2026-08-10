@@ -19,10 +19,14 @@ class CategoryForm
                     ->label('Ikon (Material Symbols)')
                     ->helperText('Contoh: chat, palette, music_note, tv, video_settings. Lihat https://fonts.google.com/icons')
                     ->default('label')
+                    ->regex('/^[a-z0-9_]+$/')
                     ->maxLength(50),
                 TextInput::make('sort')
                     ->label('Urutan')
                     ->numeric()
+                    ->integer()
+                    ->minValue(0)
+                    ->maxValue(4294967295)
                     ->default(0),
             ]);
     }

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class StoreTest extends TestCase
@@ -36,6 +37,15 @@ class StoreTest extends TestCase
             ->assertSee('KasirAkun')
             ->assertSee('Gemini Pro')
             ->assertSee('window.KASIRAKUN');
+    }
+
+    public function test_storefront_sets_baseline_security_headers(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertHeader('X-Content-Type-Options', 'nosniff')
+            ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
+            ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     }
 
     public function test_admin_requires_login(): void
@@ -96,6 +106,32 @@ class StoreTest extends TestCase
             ->assertSee('ChatGPT Plus');
     }
 
+    public function test_product_rich_description_is_rendered_and_sanitized(): void
+    {
+        Setting::create(['store_name' => 'KasirAkun', 'whatsapp_number' => '6283116545674']);
+        $category = Category::create(['name' => 'AI Chat', 'icon' => 'chat', 'sort' => 1]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Rich Product',
+            'description' => '<p><strong>Fitur utama</strong></p><ul><li>Akses premium</li></ul><script>alert(1)</script>',
+            'price' => 30000,
+            'duration' => '3 bulan',
+            'warranty' => '1 bulan',
+            'icon' => 'auto_awesome',
+            'rating' => 5,
+            'available' => true,
+            'sort' => 1,
+        ]);
+
+        $this->get("/produk/{$product->id}")
+            ->assertOk()
+            ->assertSee('<strong>Fitur utama</strong>', false)
+            ->assertSee('<ul', false)
+            ->assertSee('<li', false)
+            ->assertSee('Akses premium')
+            ->assertDontSee('<script>alert(1)</script>', false);
+    }
+
     public function test_product_media_image_and_conversion(): void
     {
         Setting::create(['store_name' => 'KasirAkun', 'whatsapp_number' => '6283116545674']);
@@ -121,6 +157,43 @@ class StoreTest extends TestCase
         $this->assertNotNull($product->getImageUrl());
         $this->assertNotNull($product->getImageUrl('thumb'));
         $this->assertTrue($product->getFirstMedia('images')->hasGeneratedConversion('thumb'));
+    }
+
+    public function test_product_media_replacement_and_deletion_are_owned_by_media_library(): void
+    {
+        Storage::fake('public');
+        $category = Category::create(['name' => 'AI Chat', 'icon' => 'chat', 'sort' => 1]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Gemini Pro',
+            'description' => 'Deskripsi.',
+            'price' => 30000,
+            'duration' => '3 bulan',
+            'warranty' => '1 bulan',
+            'icon' => 'auto_awesome',
+            'rating' => 5,
+            'available' => true,
+            'sort' => 1,
+        ]);
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=');
+
+        $first = $product->addMediaFromString($png)
+            ->usingFileName('first.jpg')
+            ->toMediaCollection('images');
+        $firstPath = $first->getPathRelativeToRoot();
+
+        $second = $product->addMediaFromString($png)
+            ->usingFileName('second.jpg')
+            ->toMediaCollection('images');
+
+        $this->assertSame(1, $product->fresh()->getMedia('images')->count());
+        $this->assertSame($second->uuid, $product->fresh()->getFirstMedia('images')->uuid);
+        Storage::disk('public')->assertMissing($firstPath);
+
+        $product->delete();
+
+        $this->assertDatabaseMissing('media', ['uuid' => $second->uuid]);
+        Storage::disk('public')->assertMissing($second->getPathRelativeToRoot());
     }
 
     public function test_admin_product_create_page_renders(): void

@@ -30,6 +30,7 @@ class TestimonialForm
                 Textarea::make('text')
                     ->label('Testimoni')
                     ->rows(3)
+                    ->maxLength(1000)
                     ->required(),
                 Toggle::make('available')
                     ->label('Tampilkan')
@@ -37,6 +38,9 @@ class TestimonialForm
                 TextInput::make('sort')
                     ->label('Urutan')
                     ->numeric()
+                    ->integer()
+                    ->minValue(0)
+                    ->maxValue(4294967295)
                     ->default(0),
             ]);
     }

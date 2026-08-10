@@ -16,7 +16,7 @@
         'icon' => $p->icon,
         'rating' => $p->rating,
         'badge' => $p->badge,
-        'description' => $p->description,
+        'description' => strip_tags($p->description),
     ];
 @endphp
 
@@ -79,7 +79,7 @@
                 </span>
             </div>
 
-            <p class="mt-4 text-sm leading-relaxed text-slate-600">{{ $p->description }}</p>
+            <div class="rich-content mt-4 text-sm leading-relaxed text-slate-600">{!! $p->renderRichContent('description') !!}</div>
 
             <div class="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-slate-500">
                 <span class="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 ring-1 ring-amber-100"><span class="material-symbols-rounded text-base text-amber-500">bolt</span> Proses cepat</span>
