@@ -6,58 +6,83 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Testimonial;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::active()
-            ->with('category')
-            ->ordered()
-            ->get()
-            ->map(fn (Product $p) => $this->productData($p));
+        $setting = Setting::current();
 
         return view('index', [
-            'products' => $products,
-            'categories' => Category::ordered()->get(['id', 'name', 'icon']),
-            'testimonials' => Testimonial::active()->ordered()->get(),
-            'storeName' => Setting::storeName(),
-            'whatsappNumber' => Setting::whatsappNumber(),
+            'products' => $this->catalogProducts(),
+            'categories' => Cache::remember('kasirakun-categories-v1', 300, fn () => Category::ordered()->get(['id', 'name', 'icon'])),
+            'testimonials' => Cache::remember('kasirakun-testimonials-v1', 300, fn () => Testimonial::active()->ordered()->get()),
+            'storeName' => $setting->store_name ?: config('app.name'),
+            'whatsappNumber' => $setting->whatsapp_number ?: config('whatsapp.number'),
         ]);
     }
 
-    public function show(Product $product)
+    public function show(int|string $product)
     {
+        $product = Product::query()
+            ->with([
+                'category:id,name,icon',
+                'media' => fn ($query) => $query->where('collection_name', 'images'),
+            ])
+            ->findOrFail($product);
+
         abort_unless($product->available, 404);
 
-        $related = Product::active()
+        $catalog = collect($this->catalogProducts());
+        $setting = Setting::current();
+        $related = $catalog
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->with('category')
-            ->ordered()
             ->take(10)
-            ->get()
-            ->map(fn (Product $p) => $this->productData($p));
-
-        $cartProducts = Product::active()
-            ->with('category')
-            ->ordered()
-            ->get()
-            ->map(fn (Product $p) => $this->productData($p));
+            ->values();
 
         return view('product.show', [
             'product' => $product,
             'related' => $related,
-            'cartProducts' => $cartProducts,
-            'storeName' => Setting::storeName(),
-            'whatsappNumber' => Setting::whatsappNumber(),
+            'cartProducts' => $catalog,
+            'storeName' => $setting->store_name ?: config('app.name'),
+            'whatsappNumber' => $setting->whatsapp_number ?: config('whatsapp.number'),
         ]);
+    }
+
+    /**
+     * Cache the already-mapped storefront payload so public requests do not
+     * repeat relation and media lookups for every visitor.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function catalogProducts(): array
+    {
+        return Cache::remember(Product::CATALOG_CACHE_KEY, 60, function (): array {
+            return Product::query()
+                ->select([
+                    'id', 'category_id', 'name', 'description', 'price',
+                    'original_price', 'duration', 'warranty', 'icon',
+                    'rating', 'badge',
+                ])
+                ->active()
+                ->with([
+                    'category:id,name,icon',
+                    'media' => fn ($query) => $query->where('collection_name', 'images'),
+                ])
+                ->ordered()
+                ->get()
+                ->map(fn (Product $product): array => $this->productData($product))
+                ->all();
+        });
     }
 
     private function productData(Product $product): array
     {
         return [
             'id' => $product->id,
+            'category_id' => $product->category_id,
             'name' => $product->name,
             'category' => $product->category->name,
             'price' => $product->price,

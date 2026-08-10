@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use Filament\Forms\Components\RichEditor\Models\Concerns\InteractsWithRichContent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Filament\Forms\Components\RichEditor\Models\Concerns\InteractsWithRichContent;
+use Illuminate\Support\Facades\Cache;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements HasMedia
 {
+    public const CATALOG_CACHE_KEY = 'kasirakun-catalog-v1';
+
     use HasFactory, InteractsWithMedia, InteractsWithRichContent;
 
     protected $fillable = [
@@ -39,6 +42,12 @@ class Product extends Model implements HasMedia
     protected function setUpRichContent(): void
     {
         $this->registerRichContent('description');
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => Cache::forget(self::CATALOG_CACHE_KEY));
+        static::deleted(fn () => Cache::forget(self::CATALOG_CACHE_KEY));
     }
 
     public function category(): BelongsTo
@@ -93,7 +102,15 @@ class Product extends Model implements HasMedia
         // Keep local image URLs relative so they work whether the app is
         // opened through localhost, 127.0.0.1, or another local hostname.
         if ($media->disk === 'public') {
-            return '/storage/' . implode('/', array_map(rawurlencode(...), explode('/', $path)));
+            $relativeUrl = '/storage/'.implode('/', array_map(rawurlencode(...), explode('/', $path)));
+
+            // On production/shared hosting, honor the configured disk URL so
+            // installations inside a subdirectory do not point at the domain root.
+            if (app()->environment('production') && filled($diskUrl = config('filesystems.disks.public.url'))) {
+                return rtrim($diskUrl, '/').'/'.implode('/', array_map(rawurlencode(...), explode('/', $path)));
+            }
+
+            return $relativeUrl;
         }
 
         return $media->getAvailableUrl([$conversion]);

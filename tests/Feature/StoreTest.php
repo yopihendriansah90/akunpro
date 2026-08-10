@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -37,6 +39,37 @@ class StoreTest extends TestCase
             ->assertSee('KasirAkun')
             ->assertSee('Gemini Pro')
             ->assertSee('window.KASIRAKUN');
+    }
+
+    public function test_home_catalog_loads_media_without_n_plus_one_queries(): void
+    {
+        $category = Category::create(['name' => 'AI Chat', 'icon' => 'chat', 'sort' => 1]);
+
+        foreach (range(1, 3) as $index) {
+            Product::create([
+                'category_id' => $category->id,
+                'name' => "Product {$index}",
+                'description' => 'Deskripsi.',
+                'price' => 30000,
+                'duration' => '1 bulan',
+                'warranty' => '1 bulan',
+                'icon' => 'apps',
+                'rating' => 5,
+                'available' => true,
+                'sort' => $index,
+            ]);
+        }
+
+        Cache::forget(Product::CATALOG_CACHE_KEY);
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $this->get('/')->assertOk();
+
+        $mediaQueries = collect(DB::getQueryLog())
+            ->filter(fn (array $query): bool => (bool) preg_match('/from [`"]media[`"]/', $query['query']));
+
+        $this->assertCount(1, $mediaQueries);
     }
 
     public function test_storefront_sets_baseline_security_headers(): void

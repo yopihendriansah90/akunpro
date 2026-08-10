@@ -8,13 +8,19 @@ use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
+    protected static ?self $currentInstance = null;
+
     use HasFactory;
 
     protected $fillable = ['store_name', 'whatsapp_number'];
 
     public static function current(): static
     {
-        return Cache::remember('kasirakun-settings', 3600, function () {
+        if (static::$currentInstance) {
+            return static::$currentInstance;
+        }
+
+        return static::$currentInstance = Cache::remember('kasirakun-settings', 3600, function () {
             return static::query()->first() ?? static::create([
                 'store_name' => config('app.name'),
                 'whatsapp_number' => config('whatsapp.number'),
@@ -42,6 +48,9 @@ class Setting extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => Cache::forget('kasirakun-settings'));
+        static::saved(function (): void {
+            static::$currentInstance = null;
+            Cache::forget('kasirakun-settings');
+        });
     }
 }

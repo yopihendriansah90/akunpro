@@ -153,7 +153,6 @@
 <script>
     window.KASIRAKUN = {
         products: @json($products),
-        cartProducts: @json($products),
         categories: @json($categories),
     };
 </script>
