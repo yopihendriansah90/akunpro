@@ -4,15 +4,15 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Category;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
 
 class ProductForm
@@ -39,17 +39,18 @@ class ProductForm
                             ->helperText('JPG, PNG, atau WebP. Maksimal 4 MB. Rekomendasi 1000 × 1000 px.')
                             ->imageEditor()
                             ->imageEditorMode(2)
-                            ->imageCropAspectRatio('1:1')
-                            ->imageEditorAspectRatios([
+                            ->imageAspectRatio('1:1')
+                            ->automaticallyCropImagesToAspectRatio()
+                            ->imageEditorAspectRatioOptions([
                                 '1:1',
                                 '4:3',
                                 '16:9',
                                 null,
                             ])
                             ->directory('products')
-                            ->imageResizeMode('contain')
-                            ->imageResizeTargetWidth('1000')
-                            ->imageResizeTargetHeight('1000')
+                            ->automaticallyResizeImagesMode('contain')
+                            ->automaticallyResizeImagesToWidth('1000')
+                            ->automaticallyResizeImagesToHeight('1000')
                             ->imagePreviewHeight('250')
                             ->panelAspectRatio('16:9')
                             ->panelLayout('compact')
@@ -91,7 +92,7 @@ class ProductForm
                     ]),
                 Section::make('Harga')
                     ->description('Masukkan angka Rupiah tanpa titik atau simbol. Contoh: 30000.')
-                    ->columns(2)
+                    ->columns(1)
                     ->schema([
                         TextInput::make('price')
                             ->label('Harga Jual (Rp)')
@@ -125,7 +126,7 @@ class ProductForm
                     ]),
                 Section::make('Detail & Status')
                     ->description('Atur masa berlaku, garansi, ikon, dan visibilitas produk.')
-                    ->columns(2)
+                    ->columns(1)
                     ->schema([
                         TextInput::make('duration')
                             ->label('Masa Aktif')
@@ -213,7 +214,7 @@ class ProductForm
         ];
 
         return collect($icons)->mapWithKeys(fn (string $icon): array => [
-            $icon => '<span class="inline-flex items-center gap-2"><span class="material-symbols-rounded text-lg">' . e($icon) . '</span><span>' . e(str_replace('_', ' ', ucwords($icon, '_'))) . '</span></span>',
+            $icon => '<span class="inline-flex items-center gap-2"><span class="material-symbols-rounded text-lg">'.e($icon).'</span><span>'.e(str_replace('_', ' ', ucwords($icon, '_'))).'</span></span>',
         ])->all();
     }
 }

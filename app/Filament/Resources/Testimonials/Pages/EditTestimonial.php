@@ -10,6 +10,11 @@ class EditTestimonial extends EditRecord
 {
     protected static string $resource = TestimonialResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

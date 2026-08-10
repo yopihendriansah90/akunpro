@@ -6,9 +6,9 @@ use App\Support\WhatsApp;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -24,7 +24,7 @@ class ProductsTable
                     ->collection('images')
                     ->conversion('thumb')
                     ->square()
-                    ->size(40)
+                    ->imageSize(40)
                     ->defaultImageUrl(fn () => 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" rx="10" fill="%23fef3c7"/></svg>'),
                 TextColumn::make('name')
                     ->label('Produk')
