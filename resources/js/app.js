@@ -93,7 +93,7 @@ function cardHTML(p) {
         '<div class="mt-1.5 flex gap-1.5">' +
         `<button aria-label="Tambah ${name} ke keranjang" class="grid h-8 w-8 place-items-center rounded-full bg-slate-900 text-white transition hover:bg-slate-700 font-bold sm:flex sm:flex-1 sm:w-auto sm:h-auto sm:justify-center sm:items-center sm:gap-1 sm:py-1.5 sm:text-[11px]" data-cart="${id}">` +
         icon("add_shopping_cart", "text-[8px]") + '<span class="hidden sm:inline">Keranjang</span></button>' +
-        `<a aria-label="Beli ${name} via WhatsApp" class="flex flex-1 items-center justify-center gap-1 rounded-full bg-emerald-500 py-1.5 text-[11px] font-bold text-white shadow transition hover:bg-emerald-600" href="${directUrl}" target="_blank" rel="noopener">` +
+        `<a aria-label="Beli ${name} via WhatsApp" data-analytics-event="whatsapp_click" data-product-id="${id}" class="flex flex-1 items-center justify-center gap-1 rounded-full bg-emerald-500 py-1.5 text-[11px] font-bold text-white shadow transition hover:bg-emerald-600" href="${directUrl}" target="_blank" rel="noopener">` +
         waIcon("h-3 w-3") + " WhatsApp</a>" +
         "</div>" +
         "</div>" +

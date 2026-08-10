@@ -47,6 +47,7 @@ class StoreTest extends TestCase
             ->assertOk()
             ->assertSee('KasirAkun')
             ->assertSee('Gemini Pro')
+            ->assertSee('data-analytics-event="whatsapp_click"', false)
             ->assertSee('window.KASIRAKUN');
     }
 
