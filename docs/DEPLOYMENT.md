@@ -33,9 +33,10 @@ APP_URL=https://domain-anda.example
 SESSION_DRIVER=file
 CACHE_STORE=file
 MEDIA_DISK=public
+FILESYSTEM_PUBLIC_URL=/storage
 ```
 
-Jika aplikasi dipasang di subfolder, masukkan subfolder tersebut ke `APP_URL`. URL media production akan mengikuti konfigurasi disk Laravel.
+Gunakan `FILESYSTEM_PUBLIC_URL=/storage` agar URL media tetap relatif terhadap domain aktif dan tidak mengalami mixed content atau menunjuk ke host lokal. Jika aplikasi dipasang di subfolder, isi variabel tersebut dengan path public media yang sesuai.
 
 `APP_URL` wajib menggunakan `https://` jika domain memakai SSL. Setelah mengubah `.env`, jalankan `php artisan optimize:clear` lalu `php artisan optimize` agar URL disk tidak memakai konfigurasi lama.
 

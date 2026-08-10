@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Testimonial;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -92,7 +93,7 @@ class ProductController extends Controller
             'icon' => $product->icon,
             'rating' => $product->rating,
             'badge' => $product->badge,
-            'description' => strip_tags($product->description),
+            'description' => Str::limit(strip_tags($product->description), 240),
             'image' => $product->getImageUrl(),
         ];
     }
