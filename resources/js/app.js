@@ -322,6 +322,23 @@ function initTestimonialCarousel() {
 
 function bindEvents() {
     document.addEventListener("click", (e) => {
+        const analyticsTarget = e.target.closest("[data-analytics-event]");
+        if (analyticsTarget) {
+            fetch("/analytics/events", {
+                method: "POST",
+                credentials: "same-origin",
+                keepalive: true,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "",
+                },
+                body: JSON.stringify({
+                    event: analyticsTarget.dataset.analyticsEvent,
+                    product_id: analyticsTarget.dataset.productId || null,
+                }),
+            }).catch(() => {});
+        }
         const openBtn = e.target.closest("[data-open]");
         if (openBtn) {
             window.location.href = `/produk/${openBtn.getAttribute("data-open")}`;

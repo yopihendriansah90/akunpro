@@ -2,10 +2,19 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Widgets\CatalogStatsOverview;
+use App\Filament\Widgets\ProductCategoryChart;
+use App\Filament\Widgets\ProductStatusChart;
+use App\Filament\Widgets\RecentProductsTable;
+use App\Models\AnalyticsEvent;
 use App\Models\Category;
+use App\Models\PageView;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\AnalyticsService;
+use Carbon\CarbonImmutable;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -81,9 +90,69 @@ class StoreTest extends TestCase
             ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     }
 
+    public function test_storefront_tracks_anonymous_views_and_events(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk()->assertCookie('kasirakun_visitor');
+        $this->assertDatabaseCount('page_views', 1);
+        $visitorCookie = collect($response->headers->getCookies())
+            ->first(fn ($cookie): bool => $cookie->getName() === 'kasirakun_visitor')
+            ->getValue();
+
+        $this->withCookie('kasirakun_visitor', $visitorCookie)
+            ->postJson('/analytics/events', ['event' => 'whatsapp_click'])
+            ->assertCreated()
+            ->assertJson(['ok' => true]);
+
+        $this->assertDatabaseHas('analytics_events', ['event_type' => 'whatsapp_click']);
+    }
+
+    public function test_analytics_service_returns_filtered_dashboard_data(): void
+    {
+        PageView::create(['visitor_hash' => hash('sha256', 'one'), 'path' => '/', 'route_name' => 'home']);
+        PageView::create(['visitor_hash' => hash('sha256', 'two'), 'path' => '/', 'route_name' => 'home']);
+        AnalyticsEvent::create(['visitor_hash' => hash('sha256', 'one'), 'event_type' => 'whatsapp_click']);
+        $oldView = PageView::create(['visitor_hash' => hash('sha256', 'old'), 'path' => '/', 'route_name' => 'home']);
+        $oldView->created_at = now()->subMonth();
+        $oldView->updated_at = $oldView->created_at;
+        $oldView->saveQuietly();
+
+        $data = app(AnalyticsService::class)->dashboard(
+            CarbonImmutable::today(),
+            CarbonImmutable::today(),
+        );
+
+        $this->assertSame(2, $data['summary']['views']);
+        $this->assertSame(2, $data['summary']['unique_visitors']);
+        $this->assertSame(1, $data['summary']['whatsapp_clicks']);
+        $this->assertNotEmpty($data['daily']);
+        $this->assertCount(12, $data['monthly']);
+    }
+
     public function test_admin_requires_login(): void
     {
         $this->get('/admin')->assertRedirect();
+    }
+
+    public function test_admin_dashboard_renders_catalog_widgets(): void
+    {
+        $user = User::create([
+            'name' => 'Admin',
+            'email' => 'dashboard@kasirakun.test',
+            'password' => bcrypt('password'),
+        ]);
+
+        $this->actingAs($user)
+            ->get('/admin')
+            ->assertOk();
+
+        $widgets = Filament::getWidgets();
+
+        $this->assertContains(CatalogStatsOverview::class, $widgets);
+        $this->assertContains(ProductCategoryChart::class, $widgets);
+        $this->assertContains(ProductStatusChart::class, $widgets);
+        $this->assertContains(RecentProductsTable::class, $widgets);
     }
 
     public function test_manage_settings_page_renders_for_authenticated_user(): void

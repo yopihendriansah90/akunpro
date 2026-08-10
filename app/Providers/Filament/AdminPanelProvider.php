@@ -2,18 +2,24 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\EditProfile;
+use App\Filament\Widgets\CatalogStatsOverview;
+use App\Filament\Widgets\ProductCategoryChart;
+use App\Filament\Widgets\ProductStatusChart;
+use App\Filament\Widgets\RecentProductsTable;
 use App\Models\Setting;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -31,7 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->profile()
+            ->profile(EditProfile::class, isSimple: false)
             ->brandName(Setting::storeName())
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
@@ -45,10 +51,21 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
+            ->navigationItems([
+                NavigationItem::make('Profil')
+                    ->key('admin-profile')
+                    ->group('Pengaturan')
+                    ->icon(Heroicon::OutlinedUserCircle)
+                    ->sort(2)
+                    ->url(fn (): ?string => Filament::getProfileUrl())
+                    ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.auth.profile')),
+            ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                CatalogStatsOverview::class,
+                ProductCategoryChart::class,
+                ProductStatusChart::class,
+                RecentProductsTable::class,
             ])
             ->middleware([
                 EncryptCookies::class,
